@@ -1,7 +1,18 @@
 import strutils
 
 type
-  GlobbyError* = object of ValueError ## Raised on invalid globs.
+  GlobbyError* = object of ValueError
+
+  GlobTree*[T] = ref object
+    data: seq[(string, T)]
+
+proc len*[T](tree: GlobTree[T]): int =
+  ## Return size of the tree.
+  tree.data.len
+
+proc add*[T](tree: GlobTree[T], path: string, data: T) =
+  ## Add a path to the tree.
+  tree.data.add((path, data))
 
 proc globMatchOne(s, glob: string): bool =
   ## Match a single entry string to glob.
@@ -100,19 +111,6 @@ proc globMatch(sArr, globArr: seq[string]): bool =
 proc globMatch*(s, glob: string): bool =
   ## Match a string to a glob pattern.
   globMatch(s.split("/"), glob.split("/"))
-
-type
-  GlobTree*[T] = ref object
-    # TODO: make the fast tree part :)
-    data: seq[(string, T)]
-
-proc len*[T](tree: GlobTree[T]): int =
-  ## Return size of the tree.
-  tree.data.len
-
-proc add*[T](tree: GlobTree[T], path: string, data: T) =
-  ## Add a path to the tree.
-  tree.data.add((path, data))
 
 proc del*[T](tree: GlobTree[T], path: string, data: T) =
   for i, entry in tree.data:
