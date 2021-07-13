@@ -28,13 +28,13 @@ assert globMatch("foo", "f[ophjkl]o") == true
 assert globMatch("foo", "f[phjklo]o") == true
 assert globMatch("foo", "f[phjkl]o") == false
 
-doAssertRaises GlobError:
+doAssertRaises GlobbyError:
   discard globMatch("foo", "f[phjklo")
 
-doAssertRaises GlobError:
+doAssertRaises GlobbyError:
   discard globMatch("foo", "f[]")
 
-doAssertRaises GlobError:
+doAssertRaises GlobbyError:
   discard globMatch("foo", "f[[]")
 
 assert globMatch("foo", "f[a-z]o") == true
@@ -43,10 +43,10 @@ assert globMatch("fooA", "foo[0-9]") == false
 assert globMatch("fooA", "foo[A-Z]") == true
 assert globMatch("fooa", "foo[A-Z]") == false
 
-doAssertRaises GlobError:
+doAssertRaises GlobbyError:
   discard globMatch("foo", "f[a-")
 
-doAssertRaises GlobError:
+doAssertRaises GlobbyError:
   discard globMatch("foo", "f[a-z")
 
 assert globMatch("foo/bar", "foo/bar") == true

@@ -1,13 +1,13 @@
 import strutils
 
 type
-  GlobError* = object of ValueError ## Raised on invalid globs.
+  GlobbyError* = object of ValueError ## Raised on invalid globs.
 
 proc globMatchOne(s, glob: string): bool =
   ## Match a single entry string to glob.
 
   proc error() =
-    raise newException(GlobError, "Invalid Glob pattern: `" & glob & "`")
+    raise newException(GlobbyError, "Invalid Glob pattern: `" & glob & "`")
 
   var
     i = 0
