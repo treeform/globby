@@ -136,11 +136,6 @@ iterator findAll*[T](tree: GlobTree[T], glob: string): T =
     if entry[0].globMatch(glob):
       yield entry[1]
 
-proc find*[T](tree: GlobTree[T], glob: string): T =
-  ## Find a single path that matches the glob.
-  for data in tree.findAll(glob):
-    return data
-
 iterator keys*[T](tree: GlobTree[T]): string =
   ## Iterate all of the keys of the tree.
   for entry in tree.data:

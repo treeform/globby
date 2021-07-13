@@ -105,17 +105,17 @@ tree.add("foo/bar/baz/z", 4)
 
 assert tree.len == 5
 
-assert tree.find("foo/bar/baz/z") == 3
+assert toSeq(tree.findAll("foo/bar/baz/z"))[0] == 3
 assert toSeq(tree.findAll("foo/bar/baz/z")).len == 2
 tree.del("foo/bar/baz/z", 3)
 assert tree.len == 4
-assert tree.find("foo/bar/baz/z") == 4
+assert toSeq(tree.findAll("foo/bar/baz/z"))[0] == 4
 assert toSeq(tree.findAll("foo/bar/baz/z")).len == 1
 
-assert tree.find("foo/bar/baz/1") == 1
-assert tree.find("foo/bar/*/1") == 1
-assert tree.find("foo/**/1") == 1
-assert tree.find("???/**/1") == 1
+assert toSeq(tree.findAll("foo/bar/baz/1"))[0] == 1
+assert toSeq(tree.findAll("foo/bar/*/1"))[0] == 1
+assert toSeq(tree.findAll("foo/**/1"))[0] == 1
+assert toSeq(tree.findAll("???/**/1"))[0] == 1
 
 assert toSeq(tree.findAll("something/*")).len == 0
 assert toSeq(tree.findAll("foo/bar/baz/*")).len == 3
