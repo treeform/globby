@@ -12,7 +12,7 @@ API reference: https://nimdocs.com/treeform/globby
 
 ## Supported patterns:
 
-done | Format            | Example         |
+Done | Format            | Example         |
 -- | ----------------- | --------------- |
 ✅ | Star              | `foo*`          |
 ✅ | Single Character  | `foo??`         |
