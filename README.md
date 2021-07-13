@@ -18,8 +18,8 @@ done | Format            | Example         |
 ✅ | Single Character  | `foo??`         |
 ✅ | Character Set     | `foo[abs]`      |
 ✅ | Character Range   | `foo[a-z]`      |
-✅ | Star path         | `foo/*/bar`     |
-✅ | Double Star path  | `foo/**/bar`    |
+✅ | Star Path         | `foo/*/bar`     |
+✅ | Double Star Path  | `foo/**/bar`    |
 ✅ | Root Path         | `/foo/bar`      |
 ✅ | Relative Path     | `../foo/bar`    |
 
@@ -34,5 +34,5 @@ tree.add("foo/bar/baz/2", 2)
 tree.add("foo/bar/baz/z", 3)
 tree.add("foo/bar/baz/z", 4)
 
-assert tree.find("foo/bar/baz/z") == 3
+assert toSeq(tree.findAll("foo/bar/baz/z"))[0] == 3
 ```
