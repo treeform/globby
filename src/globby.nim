@@ -88,21 +88,9 @@ proc globMatchOne(s, glob: string): bool =
   if i == s.len and j == glob.len:
     return true
 
-proc globSimplify(globParts: seq[string]): seq[string] =
-  ## Simplify backwards ".." and absolute "//".
-  for globPart in globParts:
-    if globPart == "..":
-      if result.len > 0:
-        discard result.pop()
-    elif globPart == "":
-      result.setLen(0)
-    else:
-      result.add globPart
-
 proc globMatch(pathParts, globParts: seq[string]): bool =
   ## Match a seq string to a seq glob pattern.
   var
-    globParts = globSimplify(globParts)
     i = 0
     j = 0
   while i < pathParts.len and j < globParts.len:
@@ -125,6 +113,17 @@ proc globMatch(pathParts, globParts: seq[string]): bool =
   if i == pathParts.len and j == globParts.len:
     return true
 
+proc globSimplify(globParts: seq[string]): seq[string] =
+  ## Simplify backwards ".." and absolute "//".
+  for globPart in globParts:
+    if globPart == "..":
+      if result.len > 0:
+        discard result.pop()
+    elif globPart == "":
+      result.setLen(0)
+    else:
+      result.add globPart
+
 proc del*[T](tree: GlobTree[T], path: string, data: T) =
   ## Delete a specific path and value from the tree.
   for i, entry in tree.data:
@@ -137,7 +136,7 @@ proc del*[T](tree: GlobTree[T], glob: string) =
   var i = 0
   while i < tree.data.len:
     let entry = tree.data[i]
-    if entry.parts.globMatch(glob.split('/')):
+    if entry.parts.globMatch(glob.split('/').globSimplify()):
       tree.data.del(i)
       continue
     inc i
@@ -145,7 +144,7 @@ proc del*[T](tree: GlobTree[T], glob: string) =
 iterator findAll*[T](tree: GlobTree[T], glob: string): T =
   ## Find all the values that match the glob.
   for entry in tree.data:
-    if entry.parts.globMatch(glob.split('/')):
+    if entry.parts.globMatch(glob.split('/').globSimplify()):
       yield entry.data
 
 iterator paths*[T](tree: GlobTree[T]): string =
@@ -155,4 +154,4 @@ iterator paths*[T](tree: GlobTree[T]): string =
 
 proc globMatch*(path, glob: string): bool =
   ## Match a path to a glob pattern.
-  globMatch(path.split('/'), glob.split('/'))
+  globMatch(path.split('/'), glob.split('/').globSimplify())
