@@ -130,3 +130,15 @@ doAssert tree.len == 1
 
 tree.del("**")
 doAssert tree.len == 0
+
+doAssertRaises GlobbyError:
+  tree.add("", 0)
+
+doAssertRaises GlobbyError:
+  tree.add("//", 0)
+
+doAssertRaises GlobbyError:
+  tree.add("a//b", 0)
+
+doAssertRaises GlobbyError:
+  tree.add("a/", 0)

@@ -12,6 +12,14 @@ proc len*[T](tree: GlobTree[T]): int =
 
 proc add*[T](tree: GlobTree[T], path: string, data: T) =
   ## Add a path to the tree.
+  if path == "":
+    raise newException(GlobbyError, "Path cannot be an empty string")
+  let names = path.split('/')
+  for name in names:
+    if name == "":
+      raise newException(GlobbyError, "Path cannot contain // or a trailing /")
+    if name.contains({'*', '?', '[', ']'}):
+      raise newException(GlobbyError, "Path cannot contain *, ?, [ or ]")
   tree.data.add((path, data))
 
 proc globMatchOne(s, glob: string): bool =
