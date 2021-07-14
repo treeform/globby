@@ -28,3 +28,9 @@ timeIt "findAll":
   for path in tree.findAll(paths[rand(0..paths.high)]):
     inc count
   doAssert count > 0
+
+timeIt "findAll **":
+  var count: int
+  for path in tree.findAll("**"):
+    inc count
+  doAssert count > 0
