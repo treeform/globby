@@ -11,7 +11,7 @@ proc len*[T](tree: GlobTree[T]): int =
   tree.data.len
 
 proc add*[T](tree: GlobTree[T], path: string, data: T) =
-  ## Add a path to the tree.
+  ## Add a path to the tree. Can contain multiple entries for the same path.
   if path == "":
     raise newException(GlobbyError, "Path cannot be an empty string")
   let names = path.split('/')
