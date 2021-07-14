@@ -134,8 +134,9 @@ proc del*[T](tree: GlobTree[T], path: string, data: T) =
 
 proc del*[T](tree: GlobTree[T], glob: string) =
   ## Delete all paths from the tree that match the glob.
-  var globParts = glob.split('/').globSimplify()
-  var i = 0
+  var
+    globParts = glob.split('/').globSimplify()
+    i = 0
   while i < tree.data.len:
     var entry = tree.data[i]
     if entry.parts.globMatch(globParts):
