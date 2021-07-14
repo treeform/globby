@@ -3,8 +3,13 @@ import strutils
 type
   GlobbyError* = object of ValueError
 
+  GlobEntry[T] = object
+    path: string
+    parts: seq[string] ## The path parts (path split on '/').
+    data: T
+
   GlobTree*[T] = ref object
-    data: seq[(string, T)]
+    data: seq[GlobEntry[T]]
 
 proc len*[T](tree: GlobTree[T]): int =
   ## Return number of paths in the tree.
@@ -14,13 +19,17 @@ proc add*[T](tree: GlobTree[T], path: string, data: T) =
   ## Add a path to the tree. Can contain multiple entries for the same path.
   if path == "":
     raise newException(GlobbyError, "Path cannot be an empty string")
-  let names = path.split('/')
-  for name in names:
-    if name == "":
+  let parts = path.split('/')
+  for part in parts:
+    if part == "":
       raise newException(GlobbyError, "Path cannot contain // or a trailing /")
-    if name.contains({'*', '?', '[', ']'}):
+    if part.contains({'*', '?', '[', ']'}):
       raise newException(GlobbyError, "Path cannot contain *, ?, [ or ]")
-  tree.data.add((path, data))
+  tree.data.add(GlobEntry[T](
+    path: path,
+    parts: parts,
+    data: data
+  ))
 
 proc globMatchOne(s, glob: string): bool =
   ## Match a single entry string to glob.
@@ -116,14 +125,10 @@ proc globMatch(sArr, globArr: seq[string]): bool =
   if i == sArr.len and j == globArr.len:
     return true
 
-proc globMatch*(s, glob: string): bool =
-  ## Match a string to a glob pattern.
-  globMatch(s.split('/'), glob.split('/'))
-
 proc del*[T](tree: GlobTree[T], path: string, data: T) =
   ## Delete a specific path and value from the tree.
   for i, entry in tree.data:
-    if entry[0] == path and entry[1] == data:
+    if entry.path == path and entry.data == data:
       tree.data.del(i)
       return
 
@@ -132,7 +137,7 @@ proc del*[T](tree: GlobTree[T], glob: string) =
   var i = 0
   while i < tree.data.len:
     let entry = tree.data[i]
-    if entry[0].globMatch(glob):
+    if entry.parts.globMatch(glob.split('/')):
       tree.data.del(i)
       continue
     inc i
@@ -140,10 +145,14 @@ proc del*[T](tree: GlobTree[T], glob: string) =
 iterator findAll*[T](tree: GlobTree[T], glob: string): T =
   ## Find all the values that match the glob.
   for entry in tree.data:
-    if entry[0].globMatch(glob):
-      yield entry[1]
+    if entry.parts.globMatch(glob.split('/')):
+      yield entry.data
 
 iterator paths*[T](tree: GlobTree[T]): string =
   ## Iterate all of the paths in the tree.
   for entry in tree.data:
-    yield entry[0]
+    yield entry.path
+
+proc globMatch*(path, glob: string): bool =
+  ## Match a path to a glob pattern.
+  globMatch(path.split('/'), glob.split('/'))
