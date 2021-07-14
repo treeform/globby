@@ -133,18 +133,20 @@ proc del*[T](tree: GlobTree[T], path: string, data: T) =
 
 proc del*[T](tree: GlobTree[T], glob: string) =
   ## Delete all paths from the tree that match the glob.
+  let globParts = glob.split('/').globSimplify()
   var i = 0
   while i < tree.data.len:
     let entry = tree.data[i]
-    if entry.parts.globMatch(glob.split('/').globSimplify()):
+    if entry.parts.globMatch(globParts):
       tree.data.del(i)
       continue
     inc i
 
 iterator findAll*[T](tree: GlobTree[T], glob: string): T =
   ## Find all the values that match the glob.
+  let globParts = glob.split('/').globSimplify()
   for entry in tree.data:
-    if entry.parts.globMatch(glob.split('/').globSimplify()):
+    if entry.parts.globMatch(globParts):
       yield entry.data
 
 iterator paths*[T](tree: GlobTree[T]): string =
