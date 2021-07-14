@@ -1,13 +1,32 @@
 import strutils
 
 type
-  GlobError* = object of ValueError ## Raised on invalid globs.
+  GlobbyError* = object of ValueError
+
+  GlobTree*[T] = ref object
+    data: seq[(string, T)]
+
+proc len*[T](tree: GlobTree[T]): int =
+  ## Return number of paths in the tree.
+  tree.data.len
+
+proc add*[T](tree: GlobTree[T], path: string, data: T) =
+  ## Add a path to the tree. Can contain multiple entries for the same path.
+  if path == "":
+    raise newException(GlobbyError, "Path cannot be an empty string")
+  let names = path.split('/')
+  for name in names:
+    if name == "":
+      raise newException(GlobbyError, "Path cannot contain // or a trailing /")
+    if name.contains({'*', '?', '[', ']'}):
+      raise newException(GlobbyError, "Path cannot contain *, ?, [ or ]")
+  tree.data.add((path, data))
 
 proc globMatchOne(s, glob: string): bool =
   ## Match a single entry string to glob.
 
   proc error() =
-    raise newException(GlobError, "Invalid Glob pattern: `" & glob & "`")
+    raise newException(GlobbyError, "Invalid Glob pattern: `" & glob & "`")
 
   var
     i = 0
@@ -61,7 +80,7 @@ proc globMatchOne(s, glob: string): bool =
     return true
 
 proc globSimplify(globArr: seq[string]): seq[string] =
-  ## Simplify backwards ".." and absolute "//" paths.
+  ## Simplify backwards ".." and absolute "//".
   for glob in globArr:
     if glob == "..":
       if result.len > 0:
@@ -101,27 +120,15 @@ proc globMatch*(s, glob: string): bool =
   ## Match a string to a glob pattern.
   globMatch(s.split("/"), glob.split("/"))
 
-type
-  GlobTree*[T] = ref object
-    # TODO: make the fast tree part :)
-    data: seq[(string, T)]
-
-proc len*[T](tree: GlobTree[T]): int =
-  ## Return size of the tree.
-  tree.data.len
-
-proc add*[T](tree: GlobTree[T], path: string, data: T) =
-  ## Add a path to the tree.
-  tree.data.add((path, data))
-
 proc del*[T](tree: GlobTree[T], path: string, data: T) =
+  ## Delete the path from the tree.
   for i, entry in tree.data:
     if entry[0] == path and entry[1] == data:
       tree.data.del(i)
       return
 
 proc del*[T](tree: GlobTree[T], glob: string) =
-  ## Delete a paths from a tree matching glob.
+  ## Delete all paths from the tree that match the glob.
   var i = 0
   while i < tree.data.len:
     let entry = tree.data[i]
@@ -131,12 +138,12 @@ proc del*[T](tree: GlobTree[T], glob: string) =
     inc i
 
 iterator findAll*[T](tree: GlobTree[T], glob: string): T =
-  ## Find all paths that match the glob.
+  ## Find all the values that match the glob.
   for entry in tree.data:
     if entry[0].globMatch(glob):
       yield entry[1]
 
-iterator keys*[T](tree: GlobTree[T]): string =
-  ## Iterate all of the keys of the tree.
+iterator paths*[T](tree: GlobTree[T]): string =
+  ## Iterate all of the paths in the tree.
   for entry in tree.data:
     yield entry[0]

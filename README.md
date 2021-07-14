@@ -12,7 +12,7 @@ API reference: https://nimdocs.com/treeform/globby
 
 ## Supported patterns:
 
-done | Format            | Example         |
+Done | Format            | Example         |
 -- | ----------------- | --------------- |
 ✅ | Star              | `foo*`          |
 ✅ | Single Character  | `foo??`         |
@@ -26,6 +26,8 @@ done | Format            | Example         |
 ## Example:
 
 ```nim
+import globby, sequtils
+
 var tree = GlobTree[int]()
 
 tree.add("foo/bar/baz", 0)
