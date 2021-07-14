@@ -1,6 +1,6 @@
 import benchy, globby, random, strutils
 
-randomize()
+randomize(2021)
 
 proc addPart(path: var string) =
   for i in 0 ..< rand(1..10):
@@ -23,19 +23,19 @@ let tree = GlobTree[int]()
 for i, path in paths:
   tree.add(path, i)
 
-timeIt "findAll":
+timeIt "findAll", 10000:
   var count: int
   for path in tree.findAll(paths[rand(0..paths.high)]):
     inc count
   doAssert count > 0
 
-timeIt "findAll **":
+timeIt "findAll **", 10000:
   var count: int
   for path in tree.findAll("**"):
     inc count
   doAssert count > 0
 
-timeIt "findAll **/..":
+timeIt "findAll **/..", 10000:
   var path: string
   while true:
     path = paths[rand(0..paths.high)]
@@ -49,7 +49,7 @@ timeIt "findAll **/..":
     inc count
   doAssert count > 0
 
-timeIt "findAll */..":
+timeIt "findAll */..", 10000:
   var path: string
   while true:
     path = paths[rand(0..paths.high)]
@@ -63,7 +63,7 @@ timeIt "findAll */..":
     inc count
   doAssert count > 0
 
-timeIt "findAll ../*/..":
+timeIt "findAll ../*/..", 10000:
   var path: string
   while true:
     path = paths[rand(0..paths.high)]
