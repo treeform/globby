@@ -138,8 +138,7 @@ proc del*[T](tree: GlobTree[T], glob: string) =
     globParts = glob.split('/').globSimplify()
     i = 0
   while i < tree.data.len:
-    var entry = tree.data[i]
-    if entry.parts.globMatch(globParts):
+    if tree.data[i].parts.globMatch(globParts):
       tree.data.delete(i)
       continue
     inc i

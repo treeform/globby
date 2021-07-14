@@ -80,3 +80,6 @@ timeIt "findAll ../*/..", 10000:
   for path in tree.findAll(glob):
     inc count
   doAssert count > 0
+
+timeIt "del", 10000:
+  tree.del(paths[rand(0..paths.high)])
