@@ -31,35 +31,35 @@ proc add*[T](tree: GlobTree[T], path: string, data: T) =
     data: data
   ))
 
-proc globMatchOne(path, glob: ptr string, pathStart = 0, globStart = 0): bool =
+proc globMatchOne(path, glob: var string, pathStart = 0, globStart = 0): bool =
   ## Match a single entry string to glob.
 
-  proc error() =
-    raise newException(GlobbyError, "Invalid glob: `" & glob[] & "`")
+  proc error(glob: var string) =
+    raise newException(GlobbyError, "Invalid glob: `" & glob & "`")
 
   var
     i = pathStart
     j = globStart
-  while j < glob[].len:
+  while j < glob.len:
     if glob[j] == '?':
       discard
     elif glob[j] == '*':
       while true:
-        if j == glob[].len - 1: # At the end
+        if j == glob.len - 1: # At the end
           return true
         elif glob[j + 1] == '*':
           inc j
         else:
           break
-      for k in i ..< path[].len:
+      for k in i ..< path.len:
         if globMatchOne(path, glob, k, j + 1):
           i = k - 1
           return true
       return false
     elif glob[j] == '[':
       inc j
-      if j < glob[].len and glob[j] == ']': error()
-      if j + 3 < glob[].len and glob[j + 1] == '-' and glob[j + 3] == ']':
+      if j < glob.len and glob[j] == ']': error(glob)
+      if j + 3 < glob.len and glob[j + 1] == '-' and glob[j + 3] == ']':
         # Do [A-z] style match.
         if path[i].ord < glob[j].ord or path[i].ord > glob[j + 2].ord:
           return false
@@ -67,28 +67,28 @@ proc globMatchOne(path, glob: ptr string, pathStart = 0, globStart = 0): bool =
       else:
         # Do [ABC] style match.
         while true:
-          if j >= glob[].len: error()
+          if j >= glob.len: error(glob)
           elif glob[j] == path[i]:
             while glob[j] != ']':
-              if j + 1 >= glob[].len: error()
+              if j + 1 >= glob.len: error(glob)
               inc j
             break
-          elif glob[j] == '[': error()
+          elif glob[j] == '[': error(glob)
           elif glob[j] == ']':
             return false
           inc j
-    elif i >= path[].len:
+    elif i >= path.len:
       return false
     elif glob[j] != path[i]:
       return false
     inc i
     inc j
 
-  if i == path[].len and j == glob[].len:
+  if i == path.len and j == glob.len:
     return true
 
 proc globMatch(
-  pathParts, globParts: seq[string], pathStart = 0, globStart = 0
+  pathParts, globParts: var seq[string], pathStart = 0, globStart = 0
 ): bool =
   ## Match a seq string to a seq glob pattern.
   var
@@ -106,7 +106,7 @@ proc globMatch(
           return true
       return false
     else:
-      if not globMatchOne(pathParts[i].unsafeAddr, globParts[j].unsafeAddr):
+      if not globMatchOne(pathParts[i], globParts[j]):
         return false
     inc i
     inc j
@@ -134,10 +134,10 @@ proc del*[T](tree: GlobTree[T], path: string, data: T) =
 
 proc del*[T](tree: GlobTree[T], glob: string) =
   ## Delete all paths from the tree that match the glob.
-  let globParts = glob.split('/').globSimplify()
+  var globParts = glob.split('/').globSimplify()
   var i = 0
   while i < tree.data.len:
-    let entry = tree.data[i]
+    var entry = tree.data[i]
     if entry.parts.globMatch(globParts):
       tree.data.del(i)
       continue
@@ -145,8 +145,8 @@ proc del*[T](tree: GlobTree[T], glob: string) =
 
 iterator findAll*[T](tree: GlobTree[T], glob: string): T =
   ## Find all the values that match the glob.
-  let globParts = glob.split('/').globSimplify()
-  for entry in tree.data:
+  var globParts = glob.split('/').globSimplify()
+  for entry in tree.data.mitems:
     if entry.parts.globMatch(globParts):
       yield entry.data
 
@@ -157,4 +157,7 @@ iterator paths*[T](tree: GlobTree[T]): string =
 
 proc globMatch*(path, glob: string): bool =
   ## Match a path to a glob pattern.
-  globMatch(path.split('/'), glob.split('/').globSimplify())
+  var
+    paths = path.split('/')
+    globs = glob.split('/').globSimplify()
+  globMatch(paths, globs)
