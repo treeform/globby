@@ -100,6 +100,15 @@ var tree = GlobTree[int]()
 tree.add("foo/bar/baz", 0)
 tree.add("foo/bar/baz/1", 1)
 tree.add("foo/bar/baz/2", 2)
+
+tree.del("foo/bar/baz")
+
+doAssert tree.len == 2
+
+# Ensure insertion order is maintained after delete
+doAssert toSeq(tree.findAll("foo/bar/baz/*")) == @[1, 2]
+
+tree.add("foo/bar/baz", 0)
 tree.add("foo/bar/baz/z", 3)
 tree.add("foo/bar/baz/z", 4)
 
