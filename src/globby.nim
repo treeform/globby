@@ -99,30 +99,30 @@ proc globSimplify(globArr: seq[string]): seq[string] =
     else:
       result.add glob
 
-proc globMatch(sArr, globArr: seq[string]): bool =
+proc globMatch(pathParts, globParts: seq[string]): bool =
   ## Match a seq string to a seq glob pattern.
   var
-    globArr = globSimplify(globArr)
+    globParts = globSimplify(globParts)
     i = 0
     j = 0
-  while i < sArr.len and j < globArr.len:
-    if globArr[j] == "*":
+  while i < pathParts.len and j < globParts.len:
+    if globParts[j] == "*":
       discard
-    elif globArr[j] == "**":
-      if j == globArr.len - 1: # At the end
+    elif globParts[j] == "**":
+      if j == globParts.len - 1: # At the end
         return true
-      for k in i ..< sArr.len:
-        if globMatch(sArr[k..^1], globArr[(j+1)..^1]):
+      for k in i ..< pathParts.len:
+        if globMatch(pathParts[k..^1], globParts[(j+1)..^1]):
           i = k - 1
           return true
       return false
     else:
-      if not globMatchOne(sArr[i], globArr[j]):
+      if not globMatchOne(pathParts[i], globParts[j]):
         return false
     inc i
     inc j
 
-  if i == sArr.len and j == globArr.len:
+  if i == pathParts.len and j == globParts.len:
     return true
 
 proc del*[T](tree: GlobTree[T], path: string, data: T) =
