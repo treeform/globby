@@ -26,6 +26,8 @@ Done | Format            | Example         |
 ## Example:
 
 ```nim
+import globby, sequtils
+
 var tree = GlobTree[int]()
 
 tree.add("foo/bar/baz", 0)
