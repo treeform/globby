@@ -129,7 +129,7 @@ proc del*[T](tree: GlobTree[T], path: string, data: T) =
   ## Delete a specific path and value from the tree.
   for i, entry in tree.data:
     if entry.path == path and entry.data == data:
-      tree.data.del(i)
+      tree.data.delete(i)
       return
 
 proc del*[T](tree: GlobTree[T], glob: string) =
@@ -139,7 +139,7 @@ proc del*[T](tree: GlobTree[T], glob: string) =
   while i < tree.data.len:
     var entry = tree.data[i]
     if entry.parts.globMatch(globParts):
-      tree.data.del(i)
+      tree.data.delete(i)
       continue
     inc i
 
