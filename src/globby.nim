@@ -88,16 +88,16 @@ proc globMatchOne(s, glob: string): bool =
   if i == s.len and j == glob.len:
     return true
 
-proc globSimplify(globArr: seq[string]): seq[string] =
+proc globSimplify(globParts: seq[string]): seq[string] =
   ## Simplify backwards ".." and absolute "//".
-  for glob in globArr:
-    if glob == "..":
+  for globPart in globParts:
+    if globPart == "..":
       if result.len > 0:
         discard result.pop()
-    elif glob == "":
+    elif globPart == "":
       result.setLen(0)
     else:
-      result.add glob
+      result.add globPart
 
 proc globMatch(pathParts, globParts: seq[string]): bool =
   ## Match a seq string to a seq glob pattern.
