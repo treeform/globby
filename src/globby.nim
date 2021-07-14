@@ -118,7 +118,7 @@ proc globMatch(sArr, globArr: seq[string]): bool =
 
 proc globMatch*(s, glob: string): bool =
   ## Match a string to a glob pattern.
-  globMatch(s.split("/"), glob.split("/"))
+  globMatch(s.split('/'), glob.split('/'))
 
 proc del*[T](tree: GlobTree[T], path: string, data: T) =
   ## Delete the a specific path and value from the tree.
