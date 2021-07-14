@@ -42,7 +42,7 @@ timeIt "findAll **/..":
     if path.contains('/'):
       break
 
-  let glob = "**/" & path[path.find('/') + 1 ..< path.len]
+  let glob = "**/" & path[path.find('/') + 1 .. ^1]
 
   var count: int
   for path in tree.findAll(glob):
@@ -56,7 +56,7 @@ timeIt "findAll */..":
     if path.contains('/'):
       break
 
-  let glob = "*/" & path[path.find('/') + 1 ..< path.len]
+  let glob = "*/" & path[path.find('/') + 1 .. ^1]
 
   var count: int
   for path in tree.findAll(glob):
@@ -72,9 +72,9 @@ timeIt "findAll ../*/..":
 
   let
     firstSlash = path.find('/')
-    secondSlash = firstSlash + 1 + path[firstSlash + 1 ..< path.len].find('/')
+    secondSlash = firstSlash + 1 + path[firstSlash + 1 .. ^1].find('/')
 
-  let glob = path[0 ..< firstSlash] & "/*/" & path[secondSlash + 1 ..< path.len]
+  let glob = path[0 ..< firstSlash] & "/*/" & path[secondSlash + 1 .. ^1]
 
   var count: int
   for path in tree.findAll(glob):
