@@ -35,7 +35,7 @@ proc globMatchOne(s, glob: string): bool =
   ## Match a single entry string to glob.
 
   proc error() =
-    raise newException(GlobbyError, "Invalid Glob pattern: `" & glob & "`")
+    raise newException(GlobbyError, "Invalid glob: `" & glob & "`")
 
   var
     i = 0
@@ -47,12 +47,12 @@ proc globMatchOne(s, glob: string): bool =
       while true:
         if j == glob.len - 1: # At the end
           return true
-        elif glob[j+1] == '*':
+        elif glob[j + 1] == '*':
           inc j
         else:
           break
       for k in i ..< s.len:
-        if globMatchOne(s[k..^1], glob[(j+1)..^1]):
+        if globMatchOne(s[k .. ^1], glob[(j + 1) .. ^1]):
           i = k - 1
           return true
       return false
@@ -62,7 +62,7 @@ proc globMatchOne(s, glob: string): bool =
       if j < glob.len and glob[j] == ']': error()
       if j + 3 < glob.len and glob[j + 1] == '-' and glob[j + 3] == ']':
         # Do [A-z] style match.
-        if s[i].ord < glob[j].ord or s[i].ord > glob[j+2].ord:
+        if s[i].ord < glob[j].ord or s[i].ord > glob[j + 2].ord:
           return false
         j += 3
       else:
