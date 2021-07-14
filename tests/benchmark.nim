@@ -1,4 +1,4 @@
-import benchy, globby, random
+import benchy, globby, random, strutils
 
 randomize()
 
@@ -26,5 +26,57 @@ for i, path in paths:
 timeIt "findAll":
   var count: int
   for path in tree.findAll(paths[rand(0..paths.high)]):
+    inc count
+  doAssert count > 0
+
+timeIt "findAll **":
+  var count: int
+  for path in tree.findAll("**"):
+    inc count
+  doAssert count > 0
+
+timeIt "findAll **/..":
+  var path: string
+  while true:
+    path = paths[rand(0..paths.high)]
+    if path.contains('/'):
+      break
+
+  let glob = "**/" & path[path.find('/') + 1 .. ^1]
+
+  var count: int
+  for path in tree.findAll(glob):
+    inc count
+  doAssert count > 0
+
+timeIt "findAll */..":
+  var path: string
+  while true:
+    path = paths[rand(0..paths.high)]
+    if path.contains('/'):
+      break
+
+  let glob = "*/" & path[path.find('/') + 1 .. ^1]
+
+  var count: int
+  for path in tree.findAll(glob):
+    inc count
+  doAssert count > 0
+
+timeIt "findAll ../*/..":
+  var path: string
+  while true:
+    path = paths[rand(0..paths.high)]
+    if path.count('/') >= 2:
+      break
+
+  let
+    firstSlash = path.find('/')
+    secondSlash = firstSlash + 1 + path[firstSlash + 1 .. ^1].find('/')
+
+  let glob = path[0 ..< firstSlash] & "/*/" & path[secondSlash + 1 .. ^1]
+
+  var count: int
+  for path in tree.findAll(glob):
     inc count
   doAssert count > 0
