@@ -105,6 +105,7 @@ tree.add("foo/bar/baz/z", 4)
 
 doAssert tree.len == 5
 
+doAssert toSeq(tree.findAll("")).len == 0
 doAssert toSeq(tree.findAll("foo/bar/baz/z"))[0] == 3
 doAssert toSeq(tree.findAll("foo/bar/baz/z")).len == 2
 tree.del("foo/bar/baz/z", 3)
