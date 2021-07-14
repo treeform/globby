@@ -121,7 +121,7 @@ proc globMatch*(s, glob: string): bool =
   globMatch(s.split('/'), glob.split('/'))
 
 proc del*[T](tree: GlobTree[T], path: string, data: T) =
-  ## Delete the a specific path and value from the tree.
+  ## Delete a specific path and value from the tree.
   for i, entry in tree.data:
     if entry[0] == path and entry[1] == data:
       tree.data.del(i)
