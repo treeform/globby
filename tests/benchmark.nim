@@ -4,7 +4,7 @@ randomize()
 
 proc addPart(path: var string) =
   for i in 0 ..< rand(1..10):
-    let c = rand(0..25) + 97 # ASCII
+    let c = rand('a'.char..'z'.char)
     path.add(c.char)
   path.add("/")
   if rand(1..100) <= 90:
