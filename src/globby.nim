@@ -88,11 +88,13 @@ proc globMatchOne(s, glob: string): bool =
   if i == s.len and j == glob.len:
     return true
 
-proc globMatch(pathParts, globParts: seq[string]): bool =
+proc globMatch(
+  pathParts, globParts: seq[string], pathStart, globStart: int
+): bool =
   ## Match a seq string to a seq glob pattern.
   var
-    i = 0
-    j = 0
+    i = pathStart
+    j = globStart
   while i < pathParts.len and j < globParts.len:
     if globParts[j] == "*":
       discard
@@ -100,7 +102,7 @@ proc globMatch(pathParts, globParts: seq[string]): bool =
       if j == globParts.len - 1: # At the end
         return true
       for k in i ..< pathParts.len:
-        if globMatch(pathParts[k..^1], globParts[(j+1)..^1]):
+        if globMatch(pathParts, globParts, k, j + 1):
           i = k - 1
           return true
       return false
@@ -112,6 +114,9 @@ proc globMatch(pathParts, globParts: seq[string]): bool =
 
   if i == pathParts.len and j == globParts.len:
     return true
+
+proc globMatch(pathParts, globParts: seq[string]): bool =
+  globMatch(pathParts, globParts, 0, 0)
 
 proc globSimplify(globParts: seq[string]): seq[string] =
   ## Simplify backwards ".." and absolute "//".
