@@ -31,35 +31,35 @@ proc add*[T](tree: GlobTree[T], path: string, data: T) =
     data: data
   ))
 
-proc globMatchOne(path, glob: string, pathStart = 0, globStart = 0): bool =
+proc globMatchOne(path, glob: ptr string, pathStart = 0, globStart = 0): bool =
   ## Match a single entry string to glob.
 
   proc error() =
-    raise newException(GlobbyError, "Invalid glob: `" & glob & "`")
+    raise newException(GlobbyError, "Invalid glob: `" & glob[] & "`")
 
   var
     i = pathStart
     j = globStart
-  while j < glob.len:
+  while j < glob[].len:
     if glob[j] == '?':
       discard
     elif glob[j] == '*':
       while true:
-        if j == glob.len - 1: # At the end
+        if j == glob[].len - 1: # At the end
           return true
         elif glob[j + 1] == '*':
           inc j
         else:
           break
-      for k in i ..< path.len:
+      for k in i ..< path[].len:
         if globMatchOne(path, glob, k, j + 1):
           i = k - 1
           return true
       return false
     elif glob[j] == '[':
       inc j
-      if j < glob.len and glob[j] == ']': error()
-      if j + 3 < glob.len and glob[j + 1] == '-' and glob[j + 3] == ']':
+      if j < glob[].len and glob[j] == ']': error()
+      if j + 3 < glob[].len and glob[j + 1] == '-' and glob[j + 3] == ']':
         # Do [A-z] style match.
         if path[i].ord < glob[j].ord or path[i].ord > glob[j + 2].ord:
           return false
@@ -67,24 +67,24 @@ proc globMatchOne(path, glob: string, pathStart = 0, globStart = 0): bool =
       else:
         # Do [ABC] style match.
         while true:
-          if j >= glob.len: error()
+          if j >= glob[].len: error()
           elif glob[j] == path[i]:
             while glob[j] != ']':
-              if j + 1 >= glob.len: error()
+              if j + 1 >= glob[].len: error()
               inc j
             break
           elif glob[j] == '[': error()
           elif glob[j] == ']':
             return false
           inc j
-    elif i >= path.len:
+    elif i >= path[].len:
       return false
     elif glob[j] != path[i]:
       return false
     inc i
     inc j
 
-  if i == path.len and j == glob.len:
+  if i == path[].len and j == glob[].len:
     return true
 
 proc globMatch(
@@ -106,7 +106,7 @@ proc globMatch(
           return true
       return false
     else:
-      if not globMatchOne(pathParts[i], globParts[j]):
+      if not globMatchOne(pathParts[i].unsafeAddr, globParts[j].unsafeAddr):
         return false
     inc i
     inc j
