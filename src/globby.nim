@@ -56,7 +56,6 @@ proc globMatchOne(path, glob: string, pathStart = 0, globStart = 0): bool =
           i = k - 1
           return true
       return false
-
     elif glob[j] == '[':
       inc j
       if j < glob.len and glob[j] == ']': error()
