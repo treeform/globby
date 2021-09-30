@@ -1,14 +1,16 @@
 # Globby - Glob pattern matching for Nim.
 
-This library is being actively developed and we'd be happy for you to use it.
+`nimble install globby`
 
-`nimble install gobby`
+![Github Actions](https://github.com/treeform/globby/workflows/Github%20Actions/badge.svg)
 
-![Github Actions](https://github.com/treeform/pixie/workflows/Github%20Actions/badge.svg)
+[API reference](https://nimdocs.com/treeform/globby)
 
-## Documentation
+This library has no dependencies other than the Nim standard libarary.
 
-API reference: https://nimdocs.com/treeform/globby
+## About
+
+This allows you to create a data structure that you can then access using globs. This library is being actively developed and we'd be happy for you to use it.
 
 ## Supported patterns:
 
